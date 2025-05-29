@@ -19,7 +19,7 @@ group_values = ['contractor', 'sub']
 
 # df = pd.read_json(filename)
 projects = pd.Series(['',])
-df = pd.DataFrame({'id': pd.Series(dtype='int'), 'name': pd.Series(dtype='str'), 'status': pd.Series(status_values, dtype='category'), 'project': pd.Series(project_values, dtype='category'), 'group': pd.Series(group_values, dtype='category'),      'notes': pd.Series(dtype='str'), 'created': pd.Series(dtype='datetime64[ns]'), 'due': pd.Series(dtype='datetime64[ns]'), 'last_activity': pd.Series(dtype='datetime64[ns]')})
+df = pd.DataFrame({'id': pd.Series(dtype='int'), 'name': pd.Series(dtype='str'), 'status': pd.Series(status_values, dtype='category'), 'project': pd.Series(project_values, dtype='category'), 'group': pd.Series(group_values, dtype='category'),      'notes': pd.Series(dtype='str'), 'due': pd.Series(dtype='datetime64[ns]'), 'last_activity': pd.Series(dtype='datetime64[ns]'), 'created': pd.Series(dtype='datetime64[ns]')})
 df['project'] = df['project'].astype('category')
 # 'people': pd.Series(dtype='array'),
 
@@ -41,6 +41,27 @@ for index, row in df.iterrows():
 
     status_box = tk.OptionMenu(root, row['status'], *status_values)
     status_box.grid(row=index, column=2)
+
+    project_box = tk.OptionsMenu(root, row['project'], *project_values)
+    project_box.grid(row=index, column=3)
+
+    group_box = tk.OptionMenu(root, row['group'], *group_values)
+    group_box.grid(row=index, column=4)
+
+    # people_box = 
+
+    due_box = tk.Label(text=str(row['due']))
+    due_box.grid(row=index, column=6)
+
+    last_activity_box = tk.Label(text=str(row['last_activity']))
+    created_box.grid(row=index, column=7)
+
+    created_box = tk.Label(text=str(row['created']))
+    created_box.grid(row=index, column=8)
+
+    
+
+    
 
     
 
