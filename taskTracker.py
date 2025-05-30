@@ -1,5 +1,7 @@
 import pandas as pd
 import tkinter as tk
+from tkinter import ttk
+
 
 print("hello world")
 
@@ -39,13 +41,30 @@ for index, row in df.iterrows():
     name_box.insert(0, row['name'])
     name_box.grid(row=index, column=1)
 
-    status_box = tk.OptionMenu(root, row['status'], *status_values)
+    # status_box = tk.OptionMenu(root, row['status'], *status_values)
+
+    status_box = ttk.Combobox(root, width = 27, textvariable = n)
+
+    status_box['values'] = status_values
+    # status_box['values'] = ('Open', 'Closed')
     status_box.grid(row=index, column=2)
 
-    project_box = tk.OptionsMenu(root, row['project'], *project_values)
+    #  project_box = tk.OptionsMenu(root, row['project'], *project_values)
+
+    project_box = ttk.Combobox(root, width = 27, textvariable = n)
+
+    project_box['values'] = project_values
+
     project_box.grid(row=index, column=3)
 
-    group_box = tk.OptionMenu(root, row['group'], *group_values)
+
+
+    # group_box = tk.OptionMenu(root, row['group'], *group_values)
+
+    group_box = ttk.Combobox(root, width = 27, textvariable = n)
+
+    group_box['values'] = group_values
+
     group_box.grid(row=index, column=4)
 
     # people_box = 
@@ -59,9 +78,9 @@ for index, row in df.iterrows():
     created_box = tk.Label(text=str(row['created']))
     created_box.grid(row=index, column=8)
 
-    
+    # May need to use a TopLevel with Scrollbar to show display of rows geather than 1 screen
 
-    
+    # Want to add ability for blocker links
 
     
 
