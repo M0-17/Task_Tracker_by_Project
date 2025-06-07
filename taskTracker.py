@@ -1,8 +1,7 @@
 import pandas as pd
 import tkinter as tk
 from tkinter import ttk
-import math
-
+from tkcalendar import DateEntry
 
 def insert_new_row():
     col_offset = 0
@@ -115,7 +114,10 @@ def load_row(index, row, col_offset):
     else:
         due_val[temp._name][0].set(str(row['due'].strftime('%d-%m-%Y')))
     due_val[temp._name][0].trace('w', due_callback)
-    due_box[uid] = tk.Label(textvariable=due_val[temp._name][0])
+    # due_box[uid] = Calendar(root, selectmode='day') 
+    # due_box[uid] = tk.Label(textvariable=due_val[temp._name][0])
+    due_box[uid] = DateEntry(root, width=12, 
+background='darkblue', foreground='white', borderwidth=2)
     due_box[uid].grid(row=index + 2, column=8)
 
     last_activity_box[uid] = tk.Label(text=str(row['last_activity'].strftime('%d-%m-%Y')))
@@ -270,4 +272,17 @@ if __name__ == "__main__":
     print(df.to_string())
 
     root.mainloop()
+
+    
+
+
+
+
+    
+
+
+
+
+
+
 
