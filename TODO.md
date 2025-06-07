@@ -1,12 +1,18 @@
 # MVP TODO
-
-- [ ] read from json
-- [ ] store to json
+- [ ] json
+    - [ ] read from json
+    - [ ] store to json
+    - [ ] Create Filename Entity/Filename bar on top row (multiple rows)
+    - [ ] Add read button top row
+    - [ ] Add write button top row
 - [ ] Way to add new rows
 - [ ] Sub tasks (use col offset)
 - [x] Update last activity
-- [ ] Ability to change due
+- [x] Ability to change due
+- [ ] Due can be nothing
 - [ ] Figure out what to do with people
+- [ ] background color
+- [ ] change height or pop out notes when selecting it
 - [ ] Update Pandas
     - [x] Name
     - [ ] Status
@@ -15,8 +21,8 @@
     - [ ] Group
     - [ ] People
     - [x] Notes
-    - [ ] Due
-    - [ ] Last Activity
+    - [] Due
+    - [x] Last Activity
 - [ ] Dashboard with standard view
     - [ ] Main veiw
     - [ ] Due this week
@@ -41,3 +47,4 @@
     - [ ] Sort accending/decending based on value
 - [ ] Ways to handle dublicate uids
 - [ ] make last_activity a button
+- [ ] printable?
