@@ -1,24 +1,25 @@
 # MVP TODO
-- [ ] json
-    - [ ] read from json
-    - [ ] store to json
-    - [ ] Create Filename Entity/Filename bar on top row (multiple rows)
-    - [ ] Add read button top row
-    - [ ] Add write button top row
+- [x] json
+    - [x] read from json
+    - [x] store to json
+    - [x] Create Filename Entity/Filename bar on top row (multiple rows)
+    - [x] Add read button top row
+    - [x] Add write button top row
 - [ ] Way to add new rows
 - [ ] Sub tasks (use col offset)
 - [x] Update last activity
 - [x] Ability to change due
-- [ ] Due can be nothing
+- [x] Due is set nothing at startup
+- [ ] Due can be set to nothing
 - [ ] Figure out what to do with people
 - [ ] background color
 - [ ] change height or pop out notes when selecting it
 - [ ] Update Pandas
     - [x] Name
-    - [ ] Status
-    - [ ] Priority 
-    - [ ] Project 
-    - [ ] Group
+    - [x] Status
+    - [x] Priority 
+    - [x] Project 
+    - [x] Group
     - [ ] People
     - [x] Notes
     - [] Due
