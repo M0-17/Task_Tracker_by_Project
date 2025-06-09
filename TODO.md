@@ -5,16 +5,14 @@
     - [x] Create Filename Entity/Filename bar on top row (multiple rows)
     - [x] Add read button top row
     - [x] Add write button top row
-- [ ] Way to add new rows
-- [ ] Sub tasks (use col offset)
+- [x] Way to add new rows
 - [x] Update last activity
 - [x] Ability to change due
 - [x] Due is set nothing at startup
 - [ ] Due can be set to nothing
 - [ ] Figure out what to do with people
-- [ ] background color
 - [ ] change height or pop out notes when selecting it
-- [ ] Update Pandas
+- [x] Update Pandas
     - [x] Name
     - [x] Status
     - [x] Priority 
@@ -22,7 +20,7 @@
     - [x] Group
     - [ ] People
     - [x] Notes
-    - [] Due
+    - [x] Due
     - [x] Last Activity
 - [ ] Dashboard with standard view
     - [ ] Main veiw
@@ -32,6 +30,9 @@
 
 
 # EXTRA TODO
+- [ ] how to remove startup rows for new json
+- [ ] background color
+- [ ] Sub tasks (use col offset)
 - [ ] Add borders for table, maybe something with Grid?
 - [ ] May need to use a TopLevel with Scrollbar to show display of rows geather than 1 screen
 - [ ] Want to add ability for blocker links
