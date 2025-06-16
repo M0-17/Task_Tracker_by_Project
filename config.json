@@ -1,0 +1,15 @@
+{
+    "status": {
+        "default" : "Open"
+    },
+    "project": {
+        "default" : "kitchen"
+    },
+    "priority": {
+        "default" : ""
+    },
+    "group": {
+        "default": "contractor"
+    }
+
+}
