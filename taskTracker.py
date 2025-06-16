@@ -7,6 +7,7 @@ from tkinter import filedialog
 from tkcalendar import DateEntry
 import datetime
 import os
+import json
 
 def select_file():
     global filename
@@ -32,42 +33,45 @@ def clean_df():
     df['notes'] = df['notes'].fillna('')
 
 
-def Entity_Combo_callback(uid, col_label, value):
+def Entry_Combo_callback(uid, col_label, value):
     index = df.index[df['uid'] == uid].to_list()[0]
     df.at[index, col_label] = value
     update_last_activity(index, uid)
-    print(df.to_string())
+    # print(df.to_string())
 
 def name_callback(name, index, mode):
-    Entity_Combo_callback(name_val[name][1], 'name', name_val[name][0].get())
+    Entry_Combo_callback(name_val[name][1], 'name', name_val[name][0].get())
 
 def status_callback(name, index, mode):
-    Entity_Combo_callback(status_val[name][1], 'status', status_val[name][0].get())
+    Entry_Combo_callback(status_val[name][1], 'status', status_val[name][0].get())
 
 def priority_callback(name, index, mode):
-    Entity_Combo_callback(priority_val[name][1], 'priority', priority_val[name][0].get())
+    Entry_Combo_callback(priority_val[name][1], 'priority', priority_val[name][0].get())
 
 def project_callback(name, index, mode):
-    Entity_Combo_callback(project_val[name][1], 'project', project_val[name][0].get())
+    Entry_Combo_callback(project_val[name][1], 'project', project_val[name][0].get())
 
 def group_callback(name, index, mode):
-    Entity_Combo_callback(group_val[name][1], 'group', group_val[name][0].get())
+    Entry_Combo_callback(group_val[name][1], 'group', group_val[name][0].get())
+
+def people_callback(name, index, mode):
+    Entry_Combo_callback(people_val[name][1], 'people', people_val[name][0].get())
 
 def notes_callback(name, index, mode):
-    Entity_Combo_callback(notes_val[name][1], 'notes', notes_val[name][0].get())
+    Entry_Combo_callback(notes_val[name][1], 'notes', notes_val[name][0].get())
 
 #######################################################################################
 
 def Timestamp_callback(uid, col_label, value):              # TODO Fix this!!!
     index = df.index[df['uid'] == uid].to_list()[0]
-    print(index)
-    print(df.to_string())
+    # print(index)
+    # print(df.to_string())
 
     update_last_activity(index, uid)
 
 def due_callback(name, index, mode):
 
-    Entity_Combo_callback(due_val[name][1], 'due', due_val[name][0].get())       # TODO Fix this!!!
+    Entry_Combo_callback(due_val[name][1], 'due', due_val[name][0].get())       # TODO Fix this!!!
 
 def last_activity_callback(name, index, mode):
     Timestamp_callback(name_val[name][1], 'last_activity', name_val[name][0].get()) # TODO Fix this!!!
@@ -81,69 +85,75 @@ def new_StringVar(uid, val_dict, col_name, callback):
     val_dict[temp._name][0].trace('w', callback)
     return temp
 
-def insert_new_row():
+def insert_new_row():       # TODO Fix widths here
     global df
     global max_uid
     
     col_offset = 0
-    print("new row")
-    max_uid = max_uid + 1
-    uid = max_uid
+    # print("new row")
+    max_uid = int(max_uid + 1)
+    uid = int(max_uid)
     index = len(df)
     # ['Select', 'UId', 'Name', 'Status', 'Priority', 'Project', 'Group', 'People', 'Notes', 'Due', 'Last Activity', 'Created']
     df.loc[index] = {'select': '', 'uid' : uid, 'priority': '', 'project': '', 'group': '', 'people': '', 'notes': '', 'due': '', 'last_activity': pd.Timestamp.now(), 'created': pd.Timestamp.now()}
 
     # load_row(index=index - 1, row=df.iloc[-1], col_offset=col_offset)
 
-    print(df.to_string())
+    # print(df.to_string())
 
+    last_activity_box[uid] = tk.Label(scroll_frame, text=str(pd.Timestamp.now().strftime('%d-%m-%Y')), width=header['Last Activity'])
+    last_activity_box[uid].grid(row=index + 2, column=10 + col_offset)
     
-    checkbox_box[uid] = tk.Checkbutton(root, onvalue=1, offvalue=0)
+    checkbox_box[uid] = tk.Checkbutton(scroll_frame, onvalue=1, offvalue=0, width=header['Status'])
     checkbox_box[uid].grid(row=index + 2, column=0 + col_offset)
 
-    uid_box[uid] = tk.Label(root, text=str(uid))
+    uid_box[uid] = tk.Label(scroll_frame, text=str(uid), width=header['UId'])
     uid_box[uid].grid(row=index + 2, column=1 + col_offset)
 
     temp = new_StringVar(uid, name_val, 'name', name_callback)
-    name_box[uid] = tk.Entry(root, textvariable=name_val[temp._name][0])    
+    name_box[uid] = tk.Entry(scroll_frame, textvariable=name_val[temp._name][0], width=header['Name'])    
     name_box[uid].grid(row=index + 2, column=2 + col_offset)
+    name_box[uid].focus_set()
 
     temp = new_StringVar(uid, status_val, 'status', status_callback)
-    status_box[uid] = ttk.Combobox(root, textvariable=status_val[temp._name][0], width=20, values=status_values, state="readonly")
+    status_box[uid] = ttk.Combobox(scroll_frame, textvariable=status_val[temp._name][0], width=header['Status'], values=status_values, state="readonly")
+    status_box[uid].set(defaults['status'])
     status_box[uid].grid(row=index + 2, column=3 + col_offset)
 
     temp = new_StringVar(uid, priority_val, 'priority', priority_callback)
-    priority_box[uid] = ttk.Combobox(root, textvariable=priority_val[temp._name][0], width=20, values=priority_values, state="readonly")
+    priority_box[uid] = ttk.Combobox(scroll_frame, textvariable=priority_val[temp._name][0], width=header['Priority'], values=priority_values, state="readonly")
+    priority_box[uid].set(defaults['priority'])
     priority_box[uid].grid(row=index + 2, column=4 + col_offset)
     
     temp = new_StringVar(uid, project_val, 'project', project_callback)
-    project_box[uid] = ttk.Combobox(root, textvariable=project_val[temp._name][0], width=20, values=project_values, state="readonly")
+    project_box[uid] = ttk.Combobox(scroll_frame, textvariable=project_val[temp._name][0], width=header['Project'], values=project_values, state="readonly")
+    project_box[uid].set(defaults['project'])
     project_box[uid].grid(row=index + 2, column=5 + col_offset)
 
     temp = new_StringVar(uid, group_val, 'group', group_callback)
-    group_box[uid] = ttk.Combobox(root, textvariable=group_val[temp._name][0], width=20, values=group_values, state="readonly")
+    group_box[uid] = ttk.Combobox(scroll_frame, textvariable=group_val[temp._name][0], width=header['Group'], values=group_values, state="readonly")
+    group_box[uid].set(defaults['group'])
     group_box[uid].grid(row=index + 2, column=6 + col_offset)
 
     # people_box =   #TODO
-
+    temp = new_StringVar(uid, people_val, 'people', people_callback)
+    people_box[uid] = tk.Entry(scroll_frame, textvariable=people_val[temp._name][0], width=header['People'])
+    people_box[uid].grid(row=index+2, column=7 + col_offset)
 
     temp = new_StringVar(uid, notes_val, 'notes', notes_callback)
-    notes_box[uid] = tk.Entry(root, textvariable=notes_val[temp._name][0])
+    notes_box[uid] = tk.Entry(scroll_frame, textvariable=notes_val[temp._name][0], width=header['Notes'])
     notes_box[uid].grid(row=index + 2, column=8 + col_offset)
 
     temp = tk.StringVar()
     due_val[temp._name] = (temp, uid)
-    due_box[uid] = DateEntry(root, textvariable=due_val[temp._name][0], allow_empty=True, width=12, background='darkblue', foreground='white', borderwidth=2)
+    due_box[uid] = DateEntry(scroll_frame, textvariable=due_val[temp._name][0], allow_empty=True, width=header['Due'], background='darkblue', foreground='white', borderwidth=2)
     due_val[temp._name][0].set('')
     due_box[uid].delete(0, "end")
     due_val[temp._name][0].trace('w', due_callback)
     due_box[uid].grid(row=index + 2, column=9 + col_offset)
 
-    
-    last_activity_box[uid] = tk.Label(text=str(pd.Timestamp.now().strftime('%d-%m-%Y')))
-    last_activity_box[uid].grid(row=index + 2, column=10 + col_offset)
 
-    created_box[uid] = tk.Label(text=str(pd.Timestamp.now().strftime('%d-%m-%Y')))
+    created_box[uid] = tk.Label(scroll_frame, text=str(pd.Timestamp.now().strftime('%d-%m-%Y')), width=header['Created'])
     created_box[uid].grid(row=index + 2, column=11 + col_offset)
 
     
@@ -162,46 +172,52 @@ def setup_StringVar(uid, val_dict, row, col_name, callback):
 
 def load_row(index, row, col_offset):
     global max_uid
-    uid = row['uid']
+    uid = int(row['uid'])
     if max_uid < uid:
         max_uid = uid
 
-    uid_box[uid] = tk.Label(root, text=str(uid))
+    last_activity_box[uid] = tk.Label(scroll_frame, text=str(row['last_activity'].strftime('%d-%m-%Y')), width=header['Last Activity'])
+    last_activity_box[uid].grid(row=index + 2, column=10 + col_offset)
+
+    uid_box[uid] = tk.Label(scroll_frame, text=str(uid), width=header['UId'])
     uid_box[uid].grid(row=index + 2, column=1 + col_offset)
     
-    checkbox_box[uid] = tk.Checkbutton(root, onvalue=1, offvalue=0)
+    checkbox_box[uid] = tk.Checkbutton(scroll_frame, onvalue=1, offvalue=0, width=header['Select'])
     checkbox_box[uid].grid(row=index + 2, column=0 + col_offset)
 
     temp = setup_StringVar(uid, name_val, row, 'name', name_callback)
-    name_box[uid] = tk.Entry(root, textvariable=name_val[temp._name][0])    
+    name_box[uid] = tk.Entry(scroll_frame, textvariable=name_val[temp._name][0], width=header['Name'])    
     name_box[uid].grid(row=index + 2, column=2 + col_offset)
 
     temp = setup_StringVar(uid, status_val, row, 'status', status_callback)
-    status_box[uid] = ttk.Combobox(root, textvariable=status_val[temp._name][0], width=20, values=status_values, state="readonly")
+    status_box[uid] = ttk.Combobox(scroll_frame, textvariable=status_val[temp._name][0], width=header['Status'], values=status_values, state="readonly")
     status_box[uid].grid(row=index + 2, column=3 + col_offset)
 
     temp = setup_StringVar(uid, priority_val, row, 'priority', priority_callback)
-    priority_box[uid] = ttk.Combobox(root, textvariable=priority_val[temp._name][0], width=20, values=priority_values, state="readonly")
+    priority_box[uid] = ttk.Combobox(scroll_frame, textvariable=priority_val[temp._name][0], width=header['Priority'], values=priority_values, state="readonly")
     priority_box[uid].grid(row=index + 2, column=4 + col_offset)
     
     temp = setup_StringVar(uid, project_val, row, 'project', project_callback)
-    project_box[uid] = ttk.Combobox(root, textvariable=project_val[temp._name][0], width=20, values=project_values, state="readonly")
+    project_box[uid] = ttk.Combobox(scroll_frame, textvariable=project_val[temp._name][0], width=header['Project'], values=project_values, state="readonly")
     project_box[uid].grid(row=index + 2, column=5 + col_offset)
 
     temp = setup_StringVar(uid, group_val, row, 'group', group_callback)
-    group_box[uid] = ttk.Combobox(root, textvariable=group_val[temp._name][0], width=20, values=group_values, state="readonly")
+    group_box[uid] = ttk.Combobox(scroll_frame, textvariable=group_val[temp._name][0], width=header['Group'], values=group_values, state="readonly")
     group_box[uid].grid(row=index + 2, column=6 + col_offset)
 
     # people_box =   #TODO
+    temp = setup_StringVar(uid, people_val, row, 'people', people_callback)
+    people_box[uid] = tk.Entry(scroll_frame, textvariable=people_val[temp._name][0], width=header['People'])
+    people_box[uid].grid(row=index+2, column=7 + col_offset)
 
 
     temp = setup_StringVar(uid, notes_val, row, 'notes', notes_callback)
-    notes_box[uid] = tk.Entry(root, textvariable=notes_val[temp._name][0])
+    notes_box[uid] = tk.Entry(scroll_frame, textvariable=notes_val[temp._name][0], width=header['Notes'])
     notes_box[uid].grid(row=index + 2, column=8 + col_offset)
 
     temp = tk.StringVar()
     due_val[temp._name] = (temp, uid)
-    due_box[uid] = DateEntry(root, textvariable=due_val[temp._name][0], allow_empty=True, width=12, background='darkblue', foreground='white', borderwidth=2)
+    due_box[uid] = DateEntry(scroll_frame, textvariable=due_val[temp._name][0], allow_empty=True, width=header['Due'], background='darkblue', foreground='white', borderwidth=2)
     if pd.isnull(row['due']):
         due_val[temp._name][0].set('')
         due_box[uid].delete(0, "end")
@@ -211,10 +227,8 @@ def load_row(index, row, col_offset):
     due_val[temp._name][0].trace('w', due_callback)
     due_box[uid].grid(row=index + 2, column=9 + col_offset)
 
-    last_activity_box[uid] = tk.Label(text=str(row['last_activity'].strftime('%d-%m-%Y')))
-    last_activity_box[uid].grid(row=index + 2, column=10 + col_offset)
 
-    created_box[uid] = tk.Label(text=str(row['created'].strftime('%d-%m-%Y')))
+    created_box[uid] = tk.Label(scroll_frame, text=str(row['created'].strftime('%d-%m-%Y')), width=header['Created'])
     created_box[uid].grid(row=index + 2, column=11 + col_offset)
 
 
@@ -234,15 +248,37 @@ def load_json():
     global df
     df = pd.read_json(filename, convert_dates=['due', 'last_activity', 'created'])     # TODO error handling
     for index, row in df.iterrows():
-        load_row(index, row, 0)
+        if not pd.isnull(row['last_activity']):
+            load_row(index, row, 0)
 
 
 if __name__ == "__main__":
-    print("hello world")
+    # print("hello world")
 
     root = tk.Tk()
-    # root.configure(bg='white')
     root.geometry('1250x750')
+    head_canvas = ttk.Frame(root)
+    container = ttk.Frame(root)
+    canvas = tk.Canvas(container)
+
+    scrollbar_vertical = ttk.Scrollbar(container, orient="vertical", command=canvas.yview)
+    scrollbar_horizontal = ttk.Scrollbar(container, orient="horizontal", command=canvas.xview)
+
+
+    scroll_frame = ttk.Frame(canvas)
+    scroll_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+    canvas.configure(yscrollcommand=scrollbar_vertical.set, xscrollcommand=scrollbar_horizontal.set)
+    canvas.create_window((0, 0), window=scroll_frame, anchor="nw")
+
+    head_canvas.pack(side="top", fill="x")
+    container.pack(fill="both", expand=True)
+    canvas.pack(side="left", fill="both", expand=True)
+    scrollbar_vertical.pack(side="right", fill="y")
+    scrollbar_horizontal.pack(side="bottom", fill="x")
+
+    # root.configure(bg='white')
+    
     max_uid = 0
     date_entry = DateEntry(root)
     # uid_to_row = {}
@@ -259,6 +295,8 @@ if __name__ == "__main__":
     project_val = {}
     group_box = {}
     group_val = {}
+    people_box = {}
+    people_val = {}
     notes_box = {}
     notes_val = {}
     due_box = {}
@@ -266,22 +304,46 @@ if __name__ == "__main__":
     last_activity_box = {}
     created_box = {}
 
-    # title = tk.Label(text="Task Tracker by Project")
+    # title = tk.Label(scroll_frame, text="Task Tracker by Project")
     # title.grid(column=0, row=0)
 
     # filename = r'C:\Users\brads\OneDrive\Programs\Task_Tracker_by_Project\example.json'
-    filename = r'C:\Users\brads\OneDrive\Programs\Task_Tracker_by_Project\example2.json'
+    filename = r'C:\Users\brads\OneDrive\Programs\Task_Tracker_by_Project\example3.json'
+    config_file = r'C:\Users\brads\OneDrive\Programs\Task_Tracker_by_Project\config.json'
 
-
-    status_values = ['Unknown', 'Open', 'In-process', 'Waiting on Responce', 'Closed']
+    status_values = ['Unknown', 'Open', 'In-process', 'Waiting on Responce', 'Need to Follow Up', 'Closed']
     project_values = ['Unknown', 'kitchen', 'bedroom']
     group_values = ['Unknown', 'contractor', 'sub']
     priority_values = ['Unknown', 'NOW', 'High', 'Med', 'Low', 'Not Now']
 
 
+    cf = open(config_file)
+    data = json.load(cf)
+    defaults = {}
+
+    if data['status']['default'] in status_values:
+        defaults['status'] = data['status']['default']
+    else:
+        defaults['status'] = ''
+
+    if data['priority']['default'] in priority_values:
+        defaults['priority'] = data['priority']['default']
+    else:
+        defaults['priority'] = ''
+
+    if data['project']['default'] in project_values:
+        defaults['project'] = data['project']['default']
+    else:
+        defaults['project'] = ''
+
+    if data['group']['default'] in group_values:
+        defaults['group'] = data['group']['default']
+    else:
+        defaults['group'] = ''
+
     # df = pd.read_json(filename)
     projects = pd.Series(['',])
-    df = pd.DataFrame({'uid': pd.Series(dtype='int'), 'name': pd.Series(dtype='str'), 'status': pd.Series(status_values, dtype='category'), 'priority': pd.Series(priority_values, dtype='category'), 'project': pd.Series(project_values, dtype='category'), 'group': pd.Series(group_values, dtype='category'),      'notes': pd.Series(dtype='str'), 'due': pd.Series(dtype='datetime64[ns]'), 'last_activity': pd.Series(dtype='datetime64[ns]'), 'created': pd.Series(dtype='datetime64[ns]')})
+    df = pd.DataFrame({'uid': pd.Series(dtype='int'), 'name': pd.Series(dtype='str'), 'status': pd.Series(status_values, dtype='category'), 'priority': pd.Series(priority_values, dtype='category'), 'project': pd.Series(project_values, dtype='category'), 'group': pd.Series(group_values, dtype='category'), 'people': pd.Series(dtype='str'), 'notes': pd.Series(dtype='str'), 'due': pd.Series(dtype='datetime64[ns]'), 'last_activity': pd.Series(dtype='datetime64[ns]'), 'created': pd.Series(dtype='datetime64[ns]')})
     df['project'] = df['project'].astype('category')
     # 'people': pd.Series(dtype='array'),
 
@@ -296,10 +358,12 @@ if __name__ == "__main__":
 
     # print(df.to_string())
 
-    header = ['Select', 'UId', 'Name', 'Status', 'Priority', 'Project', 'Group', 'People', 'Notes', 'Due', 'Last Activity', 'Created']
-    for index, head in enumerate(header):
-        header_box = tk.Label(text=head)
+    header = {'Select':5, 'UId':2, 'Name':10, 'Status':10, 'Priority':10, 'Project':10, 'Group':10, 'People':10, 'Notes':50, 'Due':12, 'Last Activity':10, 'Created':10}
+    index = 0
+    for key, value in header.items():
+        header_box = tk.Label(head_canvas, text=key, width=value)
         header_box.grid(row=1, column=index)
+        index = index + 1
 
     try:
         load_json()
@@ -308,24 +372,24 @@ if __name__ == "__main__":
 
     # clean_df()    
    
-    insert_button = tk.Button(root, text="Insert New Task", command=insert_new_row)
+    insert_button = tk.Button(head_canvas, text="Insert New Task", command=insert_new_row)
     insert_button.grid(row=0, column=2)
 
     filename_val = tk.StringVar()
     filename_val.set(filename)
-    filename_Entry = tk.Entry(root, textvariable=filename_val)
-    filename_Entry.grid(row=0, column=8)
-    filename_button = tk.Button(root, text='Select File', command=select_file)
-    filename_button.grid(row=0, column=9)
+    filename_Entry = tk.Entry(head_canvas, textvariable=filename_val)
+    filename_Entry.grid(row=0, column=7)
+    filename_button = tk.Button(head_canvas, text='Select File', command=select_file)
+    filename_button.grid(row=0, column=8)
 
     
-    load_button = tk.Button(root, text='Load From File', command=load_json)
-    load_button.grid(row=0, column=6)
-    save_button = tk.Button(root, text='Save To File', command=save_json)
-    save_button.grid(row=0, column=7)
+    load_button = tk.Button(head_canvas, text='Load From File', command=load_json)
+    load_button.grid(row=0, column=10)
+    save_button = tk.Button(head_canvas, text='Save To File', command=save_json)
+    save_button.grid(row=0, column=6)
 
 
-    print(df.to_string())
+    # print(df.to_string())
 
     root.mainloop()
 
