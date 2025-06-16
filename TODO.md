@@ -27,7 +27,22 @@
     - [ ] Due this week
     - [ ] Different groups
     - [ ] People
-
+- [x] Scrollable
+- [ ] Increase Size (2 lines?)
+    - [ ] name
+    - [ ] Notes
+    - [ ] Look into Sticky and fill
+- [ ] Auto select name when starting new row
+- [ ] Fix label width
+- [ ] When tabing through row don't have due set value
+- [ ] Set header and grid width
+- [ ] Make name and Notes 2 row height?
+- [ ] Error correction when opening files
+    - [ ] filename
+    - [ ] config_file
+- [ ] How to get inset new line and load line to be the same function
+- [ ] Issue with multiple of the same UId
+- [ ] Set label to middle of width
 
 # EXTRA TODO
 - [ ] how to remove startup rows for new json
@@ -50,3 +65,15 @@
 - [ ] Ways to handle dublicate uids
 - [ ] make last_activity a button
 - [ ] printable?
+- [ ] Color cells based on value
+- [ ] JSON for setting up config
+    - [ ] colors
+    - [ ] Dashboards
+    - [ ] Standard searchs
+    - [ ] filename 
+    - [ ] combo default values
+- [ ] Add support for CTRL+S to save
+- [ ] Add support for CTRL+Z to undo
+- [ ] Do we want error correction for last_activity?
+- [ ] Warning: c:\Users\brads\OneDrive\Programs\Task_Tracker_by_Project\taskTracker.py:94: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  df.loc[index] = {'select': '', 'uid' : uid, 'priority': '', 'project': '', 'group': '', 'people': '', 'notes': '', 'due': '', 'last_activity': pd.Timestamp.now(), 'created': pd.Timestamp.now()}
