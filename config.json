@@ -1,15 +1,20 @@
 {
-    "status": {
-        "default" : "Open"
+    "labels": {
+        "status": {
+            "default" : "Open"
+        },
+        "project": {
+            "default" : "kitchen"
+        },
+        "priority": {
+            "default" : ""
+        },
+        "group": {
+            "default": "contractor"
+        }
     },
-    "project": {
-        "default" : "kitchen"
-    },
-    "priority": {
-        "default" : ""
-    },
-    "group": {
-        "default": "contractor"
+    "tabs": {
+        "all_groups" : "True"
     }
 
 }
