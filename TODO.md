@@ -18,7 +18,7 @@
     - [x] Priority 
     - [x] Project 
     - [x] Group
-    - [ ] People
+    - [x] People
     - [x] Notes
     - [x] Due
     - [x] Last Activity
@@ -40,9 +40,13 @@
 - [ ] Error correction when opening files
     - [ ] filename
     - [ ] config_file
-- [ ] How to get inset new line and load line to be the same function
+- [x] How to get inset new line and load line to be the same function
 - [ ] Issue with multiple of the same UId
 - [ ] Set label to middle of width
+- [ ] Controls
+    - [ ] Closed display
+    - [x] Tabs
+    - [ ] 
 
 # EXTRA TODO
 - [ ] how to remove startup rows for new json
