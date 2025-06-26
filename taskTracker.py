@@ -85,78 +85,29 @@ def new_StringVar(uid, val_dict, col_name, callback):
     val_dict[temp._name][0].trace('w', callback)
     return temp
 
-def insert_new_row():       # TODO Fix widths here
+def insert_new_row():
     global df
     global max_uid
-    
+
     col_offset = 0
-    # print("new row")
-    max_uid = int(max_uid + 1)
-    uid = int(max_uid)
-    index = len(df)
-    # ['Select', 'UId', 'Name', 'Status', 'Priority', 'Project', 'Group', 'People', 'Notes', 'Due', 'Last Activity', 'Created']
-    df.loc[index] = {'select': '', 'uid' : uid, 'priority': '', 'project': '', 'group': '', 'people': '', 'notes': '', 'due': '', 'last_activity': pd.Timestamp.now(), 'created': pd.Timestamp.now()}
-
-    # load_row(index=index - 1, row=df.iloc[-1], col_offset=col_offset)
-
-    # print(df.to_string())
-
-    last_activity_box[uid] = tk.Label(scroll_frame, text=str(pd.Timestamp.now().strftime('%d-%m-%Y')), width=header['Last Activity'])
-    last_activity_box[uid].grid(row=index + 2, column=10 + col_offset)
+    new_row = {}
     
-    checkbox_box[uid] = tk.Checkbutton(scroll_frame, onvalue=1, offvalue=0, width=header['Status'])
-    checkbox_box[uid].grid(row=index + 2, column=0 + col_offset)
+    headers = df.columns.tolist()
+    for head in headers:
+        if head == 'uid':
+            max_uid = int(max_uid + 1)
+            uid = int(max_uid)
+            new_row['uid'] = uid
+        elif head == 'last_activity':
+            new_row['last_activity'] = pd.Timestamp.now()
+        elif head == 'created':
+            new_row['created'] = pd.Timestamp.now()
+        else:
+            new_row[head] = defaults[head]
 
-    uid_box[uid] = tk.Label(scroll_frame, text=str(uid), width=header['UId'])
-    uid_box[uid].grid(row=index + 2, column=1 + col_offset)
+    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
 
-    temp = new_StringVar(uid, name_val, 'name', name_callback)
-    name_box[uid] = tk.Entry(scroll_frame, textvariable=name_val[temp._name][0], width=header['Name'])    
-    name_box[uid].grid(row=index + 2, column=2 + col_offset)
-    name_box[uid].focus_set()
-
-    temp = new_StringVar(uid, status_val, 'status', status_callback)
-    status_box[uid] = ttk.Combobox(scroll_frame, textvariable=status_val[temp._name][0], width=header['Status'], values=status_values, state="readonly")
-    status_box[uid].set(defaults['status'])
-    status_box[uid].grid(row=index + 2, column=3 + col_offset)
-
-    temp = new_StringVar(uid, priority_val, 'priority', priority_callback)
-    priority_box[uid] = ttk.Combobox(scroll_frame, textvariable=priority_val[temp._name][0], width=header['Priority'], values=priority_values, state="readonly")
-    priority_box[uid].set(defaults['priority'])
-    priority_box[uid].grid(row=index + 2, column=4 + col_offset)
-    
-    temp = new_StringVar(uid, project_val, 'project', project_callback)
-    project_box[uid] = ttk.Combobox(scroll_frame, textvariable=project_val[temp._name][0], width=header['Project'], values=project_values, state="readonly")
-    project_box[uid].set(defaults['project'])
-    project_box[uid].grid(row=index + 2, column=5 + col_offset)
-
-    temp = new_StringVar(uid, group_val, 'group', group_callback)
-    group_box[uid] = ttk.Combobox(scroll_frame, textvariable=group_val[temp._name][0], width=header['Group'], values=group_values, state="readonly")
-    group_box[uid].set(defaults['group'])
-    group_box[uid].grid(row=index + 2, column=6 + col_offset)
-
-    # people_box =   #TODO
-    temp = new_StringVar(uid, people_val, 'people', people_callback)
-    people_box[uid] = tk.Entry(scroll_frame, textvariable=people_val[temp._name][0], width=header['People'])
-    people_box[uid].grid(row=index+2, column=7 + col_offset)
-
-    temp = new_StringVar(uid, notes_val, 'notes', notes_callback)
-    notes_box[uid] = tk.Entry(scroll_frame, textvariable=notes_val[temp._name][0], width=header['Notes'])
-    notes_box[uid].grid(row=index + 2, column=8 + col_offset)
-
-    temp = tk.StringVar()
-    due_val[temp._name] = (temp, uid)
-    due_box[uid] = DateEntry(scroll_frame, textvariable=due_val[temp._name][0], allow_empty=True, width=header['Due'], background='darkblue', foreground='white', borderwidth=2)
-    due_val[temp._name][0].set('')
-    due_box[uid].delete(0, "end")
-    due_val[temp._name][0].trace('w', due_callback)
-    due_box[uid].grid(row=index + 2, column=9 + col_offset)
-
-
-    created_box[uid] = tk.Label(scroll_frame, text=str(pd.Timestamp.now().strftime('%d-%m-%Y')), width=header['Created'])
-    created_box[uid].grid(row=index + 2, column=11 + col_offset)
-
-    
+    load_row(df.index[-1], df.iloc[-1], col_offset)
 
 #######################################################################################
 
@@ -257,8 +208,13 @@ if __name__ == "__main__":
 
     root = tk.Tk()
     root.geometry('1250x750')
-    head_canvas = ttk.Frame(root)
-    container = ttk.Frame(root)
+    tabControl = ttk.Notebook(root)
+    tab1 = ttk.Frame(tabControl)
+    tabControl.add(tab1, text='Main Tab')
+    
+    
+    head_canvas = ttk.Frame(tab1)
+    container = ttk.Frame(tab1)
     canvas = tk.Canvas(container)
 
     scrollbar_vertical = ttk.Scrollbar(container, orient="vertical", command=canvas.yview)
@@ -321,25 +277,48 @@ if __name__ == "__main__":
     data = json.load(cf)
     defaults = {}
 
-    if data['status']['default'] in status_values:
-        defaults['status'] = data['status']['default']
+    label_config = data['labels']
+
+    if 'name' in label_config and 'default' in label_config['name']:
+        defaults['name'] = label_config['name']['defualts']
+    else:
+        defaults['name'] = ''
+
+    if 'status' in label_config and 'default' in label_config['status'] and label_config['status']['default'] in status_values:
+        defaults['status'] = label_config['status']['default']
     else:
         defaults['status'] = ''
 
-    if data['priority']['default'] in priority_values:
-        defaults['priority'] = data['priority']['default']
+    if 'priority' in label_config and 'default' in label_config['priority'] and label_config['priority']['default'] in priority_values:
+        defaults['priority'] = label_config['priority']['default']
     else:
         defaults['priority'] = ''
 
-    if data['project']['default'] in project_values:
-        defaults['project'] = data['project']['default']
+    if 'project' in label_config and 'default' in label_config['project'] and label_config['project']['default'] in project_values:
+        defaults['project'] = label_config['project']['default']
     else:
         defaults['project'] = ''
 
-    if data['group']['default'] in group_values:
-        defaults['group'] = data['group']['default']
+    if 'people' in label_config and 'default' in label_config['people']:
+        defaults['people'] = label_config['people']['defualts']
+    else:
+        defaults['people'] = ''
+
+    if 'group' in label_config and 'default' in label_config['group'] and label_config['group']['default'] in group_values:
+        defaults['group'] = label_config['group']['default']
     else:
         defaults['group'] = ''
+
+    if 'notes' in label_config and 'default' in label_config['notes']:
+        defaults['notes'] = label_config['notes']['defualts']
+    else:
+        defaults['notes'] = ''
+
+    if 'due' in label_config and 'default' in label_config['due']:
+        defaults['due'] = label_config['due']['defualts']
+    else:
+        defaults['due'] = pd.NA
+
 
     # df = pd.read_json(filename)
     projects = pd.Series(['',])
@@ -390,6 +369,24 @@ if __name__ == "__main__":
 
 
     # print(df.to_string())
+
+    tabs = {}
+
+    if data['tabs']['all_groups'] == "True":
+        for label in group_values:
+            if label == '' or label == 'Unknown' or label == 'Closed':
+                pass
+            else:
+                tabs[label] = ttk.Frame(tabControl)
+                tabControl.add(tabs[label], text=label)
+
+        tabs['Closed'] = ttk.Frame(tabControl)
+        tabControl.add(tabs['Closed'], text='Closed')
+
+        
+    # tab2 = ttk.Frame(tabControl)
+    # tabControl.add(tab2, text='Tab 2')
+    tabControl.pack(expand=1, fill='both')
 
     root.mainloop()
 
