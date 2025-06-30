@@ -52,7 +52,13 @@ def project_callback(name, index, mode):
     Entry_Combo_callback(project_val[name][1], 'project', project_val[name][0].get())
 
 def group_callback(name, index, mode):
+    # print('here--------------------------')
+    # print(tabs)
+    old_group = df.at[df.index[df['uid'] == group_val[name][1]].to_list()[0], 'group']
     Entry_Combo_callback(group_val[name][1], 'group', group_val[name][0].get())
+    # update_group_tabs(old_group, 'group', tabs['group'])
+    # if group_val[name][0].get() == 'Closed':
+
 
 def people_callback(name, index, mode):
     Entry_Combo_callback(people_val[name][1], 'people', people_val[name][0].get())
@@ -107,7 +113,7 @@ def insert_new_row():
 
     df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
 
-    load_row(df.index[-1], df.iloc[-1], col_offset)
+    load_row(df.index[-1], df.iloc[-1], scroll_frame, col_offset)
 
 #######################################################################################
 
@@ -121,54 +127,54 @@ def setup_StringVar(uid, val_dict, row, col_name, callback):
     val_dict[temp._name][0].trace('w', callback)
     return temp
 
-def load_row(index, row, col_offset):
+def load_row(index, row, frame, col_offset):
     global max_uid
     uid = int(row['uid'])
     if max_uid < uid:
         max_uid = uid
 
-    last_activity_box[uid] = tk.Label(scroll_frame, text=str(row['last_activity'].strftime('%d-%m-%Y')), width=header['Last Activity'])
+    last_activity_box[uid] = tk.Label(frame, text=str(row['last_activity'].strftime('%d-%m-%Y')), width=header['Last Activity'])
     last_activity_box[uid].grid(row=index + 2, column=10 + col_offset)
 
-    uid_box[uid] = tk.Label(scroll_frame, text=str(uid), width=header['UId'])
+    uid_box[uid] = tk.Label(frame, text=str(uid), width=header['UId'])
     uid_box[uid].grid(row=index + 2, column=1 + col_offset)
     
-    checkbox_box[uid] = tk.Checkbutton(scroll_frame, onvalue=1, offvalue=0, width=header['Select'])
+    checkbox_box[uid] = tk.Checkbutton(frame, onvalue=1, offvalue=0, width=header['Select'])
     checkbox_box[uid].grid(row=index + 2, column=0 + col_offset)
 
     temp = setup_StringVar(uid, name_val, row, 'name', name_callback)
-    name_box[uid] = tk.Entry(scroll_frame, textvariable=name_val[temp._name][0], width=header['Name'])    
+    name_box[uid] = tk.Entry(frame, textvariable=name_val[temp._name][0], width=header['Name'])    
     name_box[uid].grid(row=index + 2, column=2 + col_offset)
 
     temp = setup_StringVar(uid, status_val, row, 'status', status_callback)
-    status_box[uid] = ttk.Combobox(scroll_frame, textvariable=status_val[temp._name][0], width=header['Status'], values=status_values, state="readonly")
+    status_box[uid] = ttk.Combobox(frame, textvariable=status_val[temp._name][0], width=header['Status'], values=status_values, state="readonly")
     status_box[uid].grid(row=index + 2, column=3 + col_offset)
 
     temp = setup_StringVar(uid, priority_val, row, 'priority', priority_callback)
-    priority_box[uid] = ttk.Combobox(scroll_frame, textvariable=priority_val[temp._name][0], width=header['Priority'], values=priority_values, state="readonly")
+    priority_box[uid] = ttk.Combobox(frame, textvariable=priority_val[temp._name][0], width=header['Priority'], values=priority_values, state="readonly")
     priority_box[uid].grid(row=index + 2, column=4 + col_offset)
     
     temp = setup_StringVar(uid, project_val, row, 'project', project_callback)
-    project_box[uid] = ttk.Combobox(scroll_frame, textvariable=project_val[temp._name][0], width=header['Project'], values=project_values, state="readonly")
+    project_box[uid] = ttk.Combobox(frame, textvariable=project_val[temp._name][0], width=header['Project'], values=project_values, state="readonly")
     project_box[uid].grid(row=index + 2, column=5 + col_offset)
 
     temp = setup_StringVar(uid, group_val, row, 'group', group_callback)
-    group_box[uid] = ttk.Combobox(scroll_frame, textvariable=group_val[temp._name][0], width=header['Group'], values=group_values, state="readonly")
+    group_box[uid] = ttk.Combobox(frame, textvariable=group_val[temp._name][0], width=header['Group'], values=group_values, state="readonly")
     group_box[uid].grid(row=index + 2, column=6 + col_offset)
 
     # people_box =   #TODO
     temp = setup_StringVar(uid, people_val, row, 'people', people_callback)
-    people_box[uid] = tk.Entry(scroll_frame, textvariable=people_val[temp._name][0], width=header['People'])
+    people_box[uid] = tk.Entry(frame, textvariable=people_val[temp._name][0], width=header['People'])
     people_box[uid].grid(row=index+2, column=7 + col_offset)
 
 
     temp = setup_StringVar(uid, notes_val, row, 'notes', notes_callback)
-    notes_box[uid] = tk.Entry(scroll_frame, textvariable=notes_val[temp._name][0], width=header['Notes'])
+    notes_box[uid] = tk.Entry(frame, textvariable=notes_val[temp._name][0], width=header['Notes'])
     notes_box[uid].grid(row=index + 2, column=8 + col_offset)
 
     temp = tk.StringVar()
     due_val[temp._name] = (temp, uid)
-    due_box[uid] = DateEntry(scroll_frame, textvariable=due_val[temp._name][0], allow_empty=True, width=header['Due'], background='darkblue', foreground='white', borderwidth=2)
+    due_box[uid] = DateEntry(frame, textvariable=due_val[temp._name][0], allow_empty=True, width=header['Due'], background='darkblue', foreground='white', borderwidth=2)
     if pd.isnull(row['due']):
         due_val[temp._name][0].set('')
         due_box[uid].delete(0, "end")
@@ -179,14 +185,30 @@ def load_row(index, row, col_offset):
     due_box[uid].grid(row=index + 2, column=9 + col_offset)
 
 
-    created_box[uid] = tk.Label(scroll_frame, text=str(row['created'].strftime('%d-%m-%Y')), width=header['Created'])
+    created_box[uid] = tk.Label(frame, text=str(row['created'].strftime('%d-%m-%Y')), width=header['Created'])
     created_box[uid].grid(row=index + 2, column=11 + col_offset)
 
 
-def gui_to_df():
-    print('gui_to_df')
+def update_group_tabs(key, col, frame):
+    # for widget in frame.winfo_children():
+    #     widget.destroy()
 
+    # print('updating ' + key)
+    group_df = df.loc[df[col] == key]
+    for index, row in group_df.iterrows():
+        if not pd.isnull(row['last_activity']):
+            load_row(index, row, frame, 0)
 
+def update_all_tabs():
+    # print("----------------------------------")
+    for index, row in df.iterrows():
+        if not pd.isnull(row['last_activity']):
+            load_row(index, row, scroll_frame, 0)
+
+    for tab_tuple in all_tabs:
+        update_group_tabs(tab_tuple[0], tab_tuple[1], tab_tuple[2])
+
+#######################################################################################
 
 def save_json():
     print('save json')
@@ -198,10 +220,10 @@ def load_json():
     print('load json')
     global df
     df = pd.read_json(filename, convert_dates=['due', 'last_activity', 'created'])     # TODO error handling
-    for index, row in df.iterrows():
-        if not pd.isnull(row['last_activity']):
-            load_row(index, row, 0)
+    
+    update_all_tabs()
 
+#######################################################################################
 
 if __name__ == "__main__":
     # print("hello world")
@@ -367,26 +389,57 @@ if __name__ == "__main__":
     save_button = tk.Button(head_canvas, text='Save To File', command=save_json)
     save_button.grid(row=0, column=6)
 
+    update_grid_button = tk.Button(head_canvas, text='Update grid', command=update_all_tabs)
+    update_grid_button.grid(row=0, column=3)
 
     # print(df.to_string())
 
     tabs = {}
+    all_tabs = []
+    # tabs['test'] = ttk.Frame(tabControl)
+    # tabControl.add(tabs['test'], text='text')
 
     if data['tabs']['all_groups'] == "True":
         for label in group_values:
-            if label == '' or label == 'Unknown' or label == 'Closed':
+            if label == 'Closed':
+                pass
+            elif label == '' or label == 'unknown':
                 pass
             else:
                 tabs[label] = ttk.Frame(tabControl)
                 tabControl.add(tabs[label], text=label)
 
+                all_tabs.append([label, 'group', tabs[label]])
+
+        for key, tab in tabs.items():
+            update_group_tabs(key, 'group', tab)
+
         tabs['Closed'] = ttk.Frame(tabControl)
         tabControl.add(tabs['Closed'], text='Closed')
+        all_tabs.append(['Closed', 'status', tabs['Closed']])
+    # update_group_tabs('Closed', 'status', tabs['Closed'])
 
-        
+
     # tab2 = ttk.Frame(tabControl)
     # tabControl.add(tab2, text='Tab 2')
     tabControl.pack(expand=1, fill='both')
+
+    update_all_tabs()
+
+    # treev = ttk.Treeview(tabs['test'], selectmode ='browse')
+    ## print(header.keys())
+    ## print(type(header.keys()))
+    # treev["columns"] = list(header.keys())
+    
+    # for head in header.keys():
+    #     treev.heading(head, text=head)
+
+    # for index, row in df.iterrows():
+    #     treev.insert("", "end", values=list(row))
+
+    # treev.pack(expand=True, fill="both")
+
+
 
     root.mainloop()
 
