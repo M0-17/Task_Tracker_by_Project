@@ -31,6 +31,22 @@ tkcalendar: 1.6.0
 - Added Tabs to allow for multiple windows
 - Update insert_new_row() to create a blank/default row & then call load_row() 
 - Adding Tabs for basic screens, described in config.json
+- Add button that will updates values across tabs
+
+### v2.1 Limitations
+- must set defaults in config file, no current error handling
+- people cannot be indexed only a string text
+- Select box
+- No Error Dectetion/Correction
+- Due is having some bugs
+- Due cannot be cleared
+- Must to set in code(no GUI):
+    - filename
+    - status_values
+    - project_values
+    - group_values
+    - priority_values
+- col_offset currently is not set
 
 
 ## v2.0
